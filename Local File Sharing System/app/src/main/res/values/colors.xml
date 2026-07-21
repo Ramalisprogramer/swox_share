@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bu sənin mavi rəngindir -->
+    <color name="swox_blue">#1976D2</color>
+    
+    <!-- Android-in ikon üçün istifadə edəcəyi arxa fon rəngi -->
+    <color name="ic_launcher_background">#1976D2</color>
+</resources>
