@@ -15,6 +15,18 @@ import android.provider.OpenableColumns
 import android.widget.Toast
 import android.content.Intent
 import androidx.compose.material3.Button
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.platform.LocalContext
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,6 +47,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -50,7 +63,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -98,40 +110,89 @@ fun SplashScreen(navController: NavHostController) {
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
-        ScreenScaffold(
-            R.string.home,
-            navController,
-            showBack = false
-        ) {
-        HomeHeader()
+    ScreenScaffold(
+        title = R.string.home,
+        navController = navController,
+        showBack = false,
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(
+                        start = 20.dp,
+                        end = 20.dp,
+                        bottom = 16.dp
+                    ),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-        PrimaryActionButton(
-            stringResource(R.string.send),
-            SendBlue
-        ) {
-            navController.navigate(ScreenRoutes.SEND)
+                HomeFloatingIconButton(
+                    icon = Icons.Default.Settings,
+                    contentDescription = stringResource(R.string.settings)
+                ) {
+                    navController.navigate(ScreenRoutes.SETTINGS)
+                }
+
+                HomeFloatingIconButton(
+                    icon = Icons.Default.Info,
+                    contentDescription = stringResource(R.string.about)
+                ) {
+                    navController.navigate(ScreenRoutes.ABOUT)
+                }
+            }
         }
+    ) {
 
-        PrimaryActionButton(
-            stringResource(R.string.receive),
-            ReceiveGreen
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            navController.navigate(ScreenRoutes.RECEIVE)
-        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+            HomeHeader()
 
-        ActionButton(
-            stringResource(R.string.settings)
-        ) {
-            navController.navigate(ScreenRoutes.SETTINGS)
-        }
+            Spacer(modifier = Modifier.height(12.dp))
 
-        ActionButton(
-            stringResource(R.string.about)
-        ) {
-            navController.navigate(ScreenRoutes.ABOUT)
+            PrimaryActionButton(
+                stringResource(R.string.send),
+                SendBlue
+            ) {
+                navController.navigate(ScreenRoutes.SEND)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            PrimaryActionButton(
+                stringResource(R.string.receive),
+                ReceiveGreen
+            ) {
+                navController.navigate(ScreenRoutes.RECEIVE)
+            }
         }
+    }
+}
+
+@Composable
+private fun HomeFloatingIconButton(
+    icon: ImageVector,
+    contentDescription: String?,
+    onClick: () -> Unit
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier
+            .size(56.dp)
+            .clip(CircleShape),
+        colors = IconButtonDefaults.iconButtonColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.primary
+        )
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription
+        )
     }
 }
 

@@ -57,6 +57,7 @@ fun ScreenScaffold(
     navController: NavHostController,
     showBack: Boolean = true,
     containerColor: Color = MaterialTheme.colorScheme.background,
+    bottomBar: @Composable (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Scaffold(
@@ -70,19 +71,31 @@ fun ScreenScaffold(
                 navigationIcon = {
                     if (showBack) {
                         IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+                            Icon(
+                                Icons.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.back)
+                            )
                         }
                     }
                 }
             )
+        },
+        bottomBar = {
+            bottomBar?.invoke()
         }
     ) { padding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .padding(horizontal = 24.dp, vertical = 16.dp)
-                .verticalScroll(rememberScrollState()),
+                .then(
+                    if (bottomBar == null)
+                        Modifier.verticalScroll(rememberScrollState())
+                    else
+                        Modifier
+                ),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             content = content

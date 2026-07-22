@@ -1,3 +1,7 @@
+@file:OptIn(
+    androidx.compose.animation.ExperimentalAnimationApi::class
+)
+
 package com.swox.share
 
 import android.os.Bundle
@@ -5,9 +9,12 @@ import android.content.Context
 import android.content.res.Configuration
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import androidx.compose.animation.*
 import androidx.navigation.compose.rememberNavController
 import java.util.Locale
 
@@ -63,7 +70,34 @@ fun SwoxShareApp() {
         if (!viewModel.hasRequiredPermissions) {
             PermissionRequiredScreen()
         } else {
-            NavHost(navController = navController, startDestination = ScreenRoutes.SPLASH) {
+            AnimatedNavHost(
+                navController = navController,
+                startDestination = ScreenRoutes.SPLASH,
+                enterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(250)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(250)
+                    )
+                },
+                popEnterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(250)
+                    )
+                },
+                popExitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(250)
+                    )
+                }
+            ) {
 
                 composable(ScreenRoutes.SPLASH) { SplashScreen(navController) }
             composable(ScreenRoutes.HOME) { HomeScreen(navController) }

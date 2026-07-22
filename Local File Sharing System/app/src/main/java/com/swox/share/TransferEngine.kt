@@ -35,6 +35,12 @@ data class TransferProgress(
 
 class TransferEngine(private val context: Context) {
 
+    companion object {
+        const val PROTOCOL_MAGIC = "SWOX"
+        const val PROTOCOL_VERSION = 1
+        const val APP_VERSION = "1.0"
+    }
+
     @Volatile
     private var serverSocket: ServerSocket? = null
 
@@ -121,6 +127,10 @@ class TransferEngine(private val context: Context) {
 
             val output = DataOutputStream(BufferedOutputStream(socket.getOutputStream()))
             Log.d("SWOX", "Header göndərilir...")
+            output.writeUTF(PROTOCOL_MAGIC)
+            output.writeInt(PROTOCOL_VERSION)
+            output.writeUTF(APP_VERSION)
+
             output.writeUTF(localDeviceName)
             output.writeUTF(fileName)
             output.writeLong(fileSize)
@@ -180,10 +190,19 @@ class TransferEngine(private val context: Context) {
 
             val input = DataInputStream(BufferedInputStream(socket.getInputStream()))
             Log.d("SWOX", "Header gözlənilir...")
+            val magic = input.readUTF()
+
+            if (magic != PROTOCOL_MAGIC) {
+                throw IllegalStateException("Unknown Swox protocol")
+            }
+
+            val protocolVersion = input.readInt()
+            val remoteVersion = input.readUTF()
+
             val remoteDevice = input.readUTF()
             val fileName = input.readUTF()
             val fileSize = input.readLong()
-            Log.d("SWOX","Header alındı: $remoteDevice | $fileName | $fileSize")
+            Log.d("SWOX","Protocol=$protocolVersion Version=$remoteVersion Device=$remoteDevice File=$fileName Size=$fileSize")
 
             updateProgress(
                 TransferProgress(
